@@ -9,8 +9,8 @@
 
 
 // Wifi Access Point configuration
-const char* ssid = "kame";
-const char* password = "asdf";
+const char* ssid = "kameControl";
+const char* password = "kamecontrol";
 
 
 MiniKame robot( /* FLI */ W_D4, /* FRI */ W_D2,
