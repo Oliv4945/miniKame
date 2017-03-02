@@ -6,6 +6,11 @@
 
 class MiniKame{
 public:
+    MiniKame(  unsigned int S0, unsigned int S1,
+                    unsigned int S2, unsigned int S3,
+                    unsigned int S4, unsigned int S5,
+                    unsigned int S6, unsigned int S7
+              );
     void init();
     void run(float steps, int period);
     void walk(float steps, int period);

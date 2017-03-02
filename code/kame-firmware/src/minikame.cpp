@@ -1,16 +1,23 @@
 #include "minikame.h"
 
 
-void MiniKame::init(){
+MiniKame::MiniKame( unsigned int S0, unsigned int S1,
+                    unsigned int S2, unsigned int S3,
+                    unsigned int S4, unsigned int S5,
+                    unsigned int S6, unsigned int S7
+                  ) {
     // Map between servos and board pins
-    board_pins[0] = D4; // Servo S0 - FLI
-    board_pins[1] = D2; // Servo S1 - FRI
-    board_pins[2] = D3; // Servo S2 - FLO
-    board_pins[3] = D1; // Servo S3 - FRO
-    board_pins[4] = D8; // Servo S4 - BLI
-    board_pins[5] = D6; // Servo S5 - BRI
-    board_pins[6] = D7; // Servo S6 - BLO
-    board_pins[7] = D5; // Servo S7 - BRO
+    board_pins[0] = S0; // Servo S0 - FLI
+    board_pins[1] = S1; // Servo S1 - FRI
+    board_pins[2] = S2; // Servo S2 - FLO
+    board_pins[3] = S3; // Servo S3 - FRO
+    board_pins[4] = S4; // Servo S4 - BLI
+    board_pins[5] = S5; // Servo S5 - BRI
+    board_pins[6] = S6; // Servo S6 - BLO
+    board_pins[7] = S7; // Servo S7 - BRO
+}
+
+void MiniKame::init(){
 
     // Trim values for zero position calibration.
     trim[0] = 0;

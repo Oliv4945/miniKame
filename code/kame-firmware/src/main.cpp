@@ -2,6 +2,7 @@
 #include <ESP8266WiFi.h>
 #include <WiFiClient.h>
 #include <Servo.h>
+#include "WemosMiniD1.h"
 #include "minikame.h"
 
 
@@ -12,7 +13,11 @@ const char* password = "asdf";
 
 void parseData(String data);
 
-MiniKame robot;
+MiniKame robot( /* FLI */ W_D4, /* FRI */ W_D2,
+                /* FLO */ W_D3, /* FR0 */ W_D1,
+                /* BLI */ W_D8, /* BRI */ W_D6,
+                /* BLO */ W_D7, /* BRO */ W_D5
+              );
 WiFiServer server(80);
 bool running=0;
 String input;
