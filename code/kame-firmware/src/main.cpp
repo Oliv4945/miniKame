@@ -5,6 +5,7 @@
 #include <Servo.h>
 #include "WemosMiniD1.h"
 #include "minikame.h"
+#include "../tools/root.h"
 
 
 
@@ -23,6 +24,7 @@ ESP8266WebServer server(80);
 // Declare functions
 void handleRoot();
 void handleNotFound();
+void handleCommands();
 
 void setup() {
     WiFi.mode(WIFI_AP);
@@ -50,6 +52,7 @@ void setup() {
     server.on("/inline", [](){
       server.send(200, "text/plain", "this works as well");
     });
+    server.on("/command", HTTP_POST, handleCommands);
     server.onNotFound(handleNotFound);
 
     server.begin();
@@ -151,7 +154,9 @@ void parseData(String data){
 
 
 void handleRoot() {
-  server.send(200, "text/plain", "kame control");}
+  rootMessage;
+  server.send(200, "text/html", message);
+}
 
 void handleNotFound(){
   String message = "File Not Found\n\n";
@@ -166,4 +171,14 @@ void handleNotFound(){
     message += " " + server.argName(i) + ": " + server.arg(i) + "\n";
   }
   server.send(404, "text/plain", message);
+}
+
+void handleCommands() {
+  if (server.hasArg("command")) {
+    Serial.print("MOVE - ");
+    Serial.println(server.arg("command"));
+  } else {
+    Serial.println("MOVE - No commands");
+  }
+  // TOOD: Answer
 }
