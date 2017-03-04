@@ -1,5 +1,8 @@
 #include <ESP8266WiFi.h>
 #include <WiFiClient.h>
+#ifndef WIFI_AP_MODE
+  #include <WiFiManager.h>
+#endif
 #include <ESP8266WebServer.h>
 #include <ESP8266mDNS.h>
 #include <Servo.h>
@@ -12,6 +15,7 @@
 // Wifi Access Point configuration
 const char* ssid = "kameControl";
 const char* password = "kamecontrol";
+
 
 
 MiniKame robot( /* FLI */ W_D4, /* FRI */ W_D2,
@@ -27,8 +31,13 @@ void handleNotFound();
 void handleCommands();
 
 void setup() {
-    WiFi.mode(WIFI_AP);
-    WiFi.softAP(ssid, password);
+    #ifdef WIFI_AP_MODE
+      WiFi.mode(WIFI_AP);
+      WiFi.softAP(ssid, password);
+    #else
+      WiFiManager wifiManager;
+      wifiManager.autoConnect(ssid);
+    #endif
     server.begin();
     Serial.begin(115200);
 
