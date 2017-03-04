@@ -189,5 +189,5 @@ void handleCommands() {
   } else {
     Serial.println("MOVE - No commands");
   }
-  // TOOD: Answer
+  server.send(200, "text/plain", "OK");
 }
