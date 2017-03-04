@@ -7,7 +7,7 @@ def conversion(fileName, varName):
     with open(fileName, 'r') as htmlFile:
         with open(fileName.split('.')[0]+'.h', 'w') as hFile:
             page = re.sub(r"\t+", "", htmlFile.read())
-            page = re.sub(r"\n", "", page)
+            page = re.sub(r"\n", "\\\\n", page)
             page = re.sub(r"\"", "\\\"", page)
             hFile.write('#define '+fileName.split('.')[0]+'Message String message = "'+page+'";')
 
