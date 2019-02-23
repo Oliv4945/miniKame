@@ -36,10 +36,7 @@ MiniKame robot( /* FLI */ W_D4,
 
 
 // Declare functions
-void handleRoot();
-void handleNotFound();
 void handleCommands(byte command, byte strength);
-void parseData(String data);
 
 void setup() {
   Serial.begin(115200);
@@ -135,63 +132,23 @@ void handleCommands(byte command, byte strength) {
     case 'a':
       robot.hello();
       break;
+    case 'b': // heart
+      robot.pushUp(2, 2000);
+      break;
+    case 'c': // fire
+      robot.upDown(4, 250);
+      break;
+    case 'd': // skull
+        robot.jump();
+        break;
+    case 'e': // cross
+        robot.hello();
+        break;
+    case 'f': // punch
+        robot.frontBack(4,200);
+        break;
+    case 'g': // mask
+        robot.dance(2,1000);
+        break;
   }
 }
-
-
-void parseData(String data){
-
-    switch (data.toInt()){
-
-        case 1: // Up
-            robot.walk(1,550);
-            running = 1;
-            break;
-
-        case 2: // Down
-            break;
-
-        case 3: // Left
-            robot.turnL(1,550);
-            running = 1;
-            break;
-
-        case 4: // Right
-            robot.turnR(1,550);
-            running = 1;
-            break;
-
-        case 5: // STOP
-            running = 0;
-            break;
-
-        case 6: // heart
-            robot.pushUp(2,2000);
-            break;
-
-        case 7: // fire
-            robot.upDown(4,250);
-            break;
-
-        case 8: // skull
-            robot.jump();
-            break;
-
-        case 9: // cross
-            robot.hello();
-            break;
-
-        case 10: // punch
-            robot.frontBack(4,200);
-            break;
-
-        case 11: // mask
-            robot.dance(2,1000);
-            break;
-
-        default:
-            robot.home();
-            break;
-    }
-}
-
