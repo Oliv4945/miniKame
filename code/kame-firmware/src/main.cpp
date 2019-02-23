@@ -1,3 +1,5 @@
+//#define WIFI_AP_MODE
+
 #include <ESP8266WiFi.h>
 #include <WiFiClient.h>
 #ifndef WIFI_AP_MODE
@@ -15,22 +17,43 @@
 // Wifi Access Point configuration
 const char* ssid = "kameControl";
 const char* password = "kamecontrol";
+const uint32_t udpBufferSize = 256;
 
+bool running = 0;
+byte packetBuffer[udpBufferSize];
+String input;
+WiFiUDP udp;
 
-
-MiniKame robot( /* FLI */ W_D4, /* FRI */ W_D2,
-                /* FLO */ W_D3, /* FR0 */ W_D1,
-                /* BLI */ W_D8, /* BRI */ W_D6,
-                /* BLO */ W_D7, /* BRO */ W_D5
+MiniKame robot( /* FLI */ W_D4,
+                /* FRI */ W_D2,
+                /* FLO */ W_D3,
+                /* FR0 */ W_D1,
+                /* BLI */ W_D8,
+                /* BRI */ W_D6,
+                /* BLO */ W_D7,
+                /* BRO */ W_D5
               );
-ESP8266WebServer server(80);
+
 
 // Declare functions
 void handleRoot();
 void handleNotFound();
-void handleCommands();
+void handleCommands(byte command, byte strength);
+void parseData(String data);
 
 void setup() {
+  Serial.begin(115200);
+  
+  Serial.print("MiniKame starting...");
+  robot.init();
+  robot.home();
+
+
+  // robot.walk(5,550);
+  // robot.turnR(5,550);
+  // robot.hello();
+  // robot.home();
+
     #ifdef WIFI_AP_MODE
       WiFi.mode(WIFI_AP);
       WiFi.softAP(ssid, password);
@@ -38,13 +61,10 @@ void setup() {
       WiFiManager wifiManager;
       wifiManager.autoConnect(ssid);
     #endif
-    server.begin();
-    Serial.begin(115200);
 
-    Serial.print("MiniKame starting...");
-    delay(1000);
-    robot.init();
-    Serial.println("OK");
+    // UDP server
+    udp.begin(2000);
+    Serial.println("UDP - Server started\n");
 
 
     Serial.print("IP - ");
@@ -55,55 +75,70 @@ void setup() {
     } else {
       Serial.println("NOK");
     }
-
-    // Define web pages callbacks
-    server.on("/", handleRoot);
-    server.on("/inline", [](){
-      server.send(200, "text/plain", "this works as well");
-    });
-    server.on("/command", HTTP_POST, handleCommands);
-    server.onNotFound(handleNotFound);
-
-    server.begin();
-    Serial.println("HTTP - Server started\n");
 }
 
 void loop() {
-    server.handleClient();
+  uint16_t noReadBytes;
+
+  // If a packet is available
+  uint32_t noAvailableBytes = udp.parsePacket();
+  if (noAvailableBytes > 0) {
+    // Not just a byte FIFO, read until last available packet
+    while (noAvailableBytes > 0) {
+      if (noAvailableBytes > udpBufferSize) noAvailableBytes = udpBufferSize; // Check if buffer is large enough
+      noReadBytes = udp.read(packetBuffer, noAvailableBytes);
+      noAvailableBytes = udp.parsePacket();
+    }
 
     /*
-    WiFiClient client = server.available();
-    if (!client) {
-        IPAddress myIP = WiFi.softAPIP();
-        Serial.print("AP IP address: ");
-        Serial.println(myIP);
-        delay(1000);
+    Serial.print("noAvailableBytes: ");
+    Serial.println(noAvailableBytes);
+    
+    for (uint16_t i = 0; i < noReadBytes; i++) {
+      Serial.print("0x");
+      Serial.print(packetBuffer[i], HEX);
+      Serial.print(", ");
     }
-    while (client.connected()) {
-        if (running){
-            Serial.println("running");
-            if (client.available()) {
-                while(client.available()) input = client.readStringUntil('+');
-                parseData(input);
-            }
-            else {
-                Serial.println("Keep Moving");
-                parseData(input);
-            }
-        }
-        else{
-            Serial.println("Normal mode");
-            if (client.available()) {
-                while(client.available()) input = client.readStringUntil('+');
-                parseData(input);
-            }
-            else robot.home();
-        }
-    }
+    Serial.println(' ');
     */
+    handleCommands(packetBuffer[noReadBytes-2], packetBuffer[noReadBytes-1]);
+  } else {
+    robot.home();
+  }
 }
 
-/*
+
+void handleCommands(byte command, byte strength) {
+
+  // Compute speed
+  // 550 minimum
+  // strength comes in from 0 to 100%, have to invert it
+  uint16_t speed = (uint16_t) (550.0 + (100.0 - ((float) strength))/100.0 * 1000.0);
+
+  Serial.print("Command: ");
+  Serial.print(command);
+  Serial.print("\t-\tStrength: ");
+  Serial.print(strength);
+  Serial.print("\t-\tSpeed: ");
+  Serial.println(speed);
+
+  switch (command) {
+    case 'i':
+      robot.walk(1, speed);
+      break;
+    case 'j':
+      robot.turnL(1, speed);
+      break;
+    case 'l':
+      robot.turnR(1, speed);
+      break;
+    case 'a':
+      robot.hello();
+      break;
+  }
+}
+
+
 void parseData(String data){
 
     switch (data.toInt()){
@@ -159,35 +194,4 @@ void parseData(String data){
             break;
     }
 }
-*/
 
-
-void handleRoot() {
-  rootMessage;
-  server.send(200, "text/html", message);
-}
-
-void handleNotFound(){
-  String message = "File Not Found\n\n";
-  message += "URI: ";
-  message += server.uri();
-  message += "\nMethod: ";
-  message += (server.method() == HTTP_GET)?"GET":"POST";
-  message += "\nArguments: ";
-  message += server.args();
-  message += "\n";
-  for (uint8_t i=0; i<server.args(); i++){
-    message += " " + server.argName(i) + ": " + server.arg(i) + "\n";
-  }
-  server.send(404, "text/plain", message);
-}
-
-void handleCommands() {
-  if (server.hasArg("command")) {
-    Serial.print("MOVE - ");
-    Serial.println(server.arg("command"));
-  } else {
-    Serial.println("MOVE - No commands");
-  }
-  server.send(200, "text/plain", "OK");
-}

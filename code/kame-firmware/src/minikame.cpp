@@ -20,14 +20,14 @@ MiniKame::MiniKame( unsigned int S0, unsigned int S1,
 void MiniKame::init(){
 
     // Trim values for zero position calibration.
-    trim[0] = 0;
-    trim[1] = -8;
-    trim[2] = 8;
-    trim[3] = 5;
-    trim[4] = 2;
-    trim[5] = -6;
-    trim[6] = 6;
-    trim[7] = 5;
+    trim[0] = -30;
+    trim[1] = 30;
+    trim[2] = 3;
+    trim[3] = 3;
+    trim[4] = 30;
+    trim[5] = -15;
+    trim[6] = 0;
+    trim[7] = 10;
 
     // Set reverse movement
     for (int i=0; i<8; i++) reverse[i] = false;
