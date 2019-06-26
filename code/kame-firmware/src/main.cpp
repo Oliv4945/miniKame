@@ -152,22 +152,19 @@ void handleCommands(byte command, byte strength) {
     case 'a':
       robot.hello();
       break;
-    case 'b': // heart
+    case 'z': // heart
       robot.pushUp(2, 2000);
       break;
-    case 'c': // fire
+    case 'e': // fire
       robot.upDown(4, 250);
       break;
-    case 'd': // skull
+    case 'q': // skull
         robot.jump();
         break;
-    case 'e': // cross
-        robot.hello();
-        break;
-    case 'f': // punch
+    case 's': // punch
         robot.frontBack(4,200);
         break;
-    case 'g': // mask
+    case 'd': // mask
         robot.dance(2,1000);
         break;
   }
