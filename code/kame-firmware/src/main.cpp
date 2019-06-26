@@ -1,4 +1,4 @@
-//#define WIFI_AP_MODE
+// #define WIFI_AP_MODE
 
 #include <ESP8266WiFi.h>
 #include <WiFiClient.h>
@@ -51,13 +51,33 @@ void setup() {
   // robot.hello();
   // robot.home();
 
-    #ifdef WIFI_AP_MODE
+    /*#ifdef WIFI_AP_MODE
       WiFi.mode(WIFI_AP);
       WiFi.softAP(ssid, password);
     #else
       WiFiManager wifiManager;
       wifiManager.autoConnect(ssid);
     #endif
+    */
+  /*
+  // Connect to AP
+  WiFi.disconnect();
+  WiFi.mode(WIFI_STA);
+  Serial.print("Connecting to ");
+  Serial.println(ssid);
+  WiFi.begin(ssid, password);
+
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println("");
+  Serial.println("Connected to WiFi");
+  */
+  // Act as AP
+  WiFi.softAP("miniKame", "logokame");
+  
+
 
     // UDP server
     udp.begin(2000);
