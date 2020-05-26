@@ -3,7 +3,7 @@
 #include <ESP8266WiFi.h>
 #include <WiFiClient.h>
 #ifndef WIFI_AP_MODE
-  #include <WiFiManager.h>
+  // #include <WiFiManager.h>
 #endif
 #include <ESP8266WebServer.h>
 #include <ESP8266mDNS.h>
@@ -15,8 +15,8 @@
 
 
 // Wifi Access Point configuration
-const char* ssid = "kameControl";
-const char* password = "kamecontrol";
+const char* ssid = "LesGros";
+const char* password = "tonyparker38";
 const uint32_t udpBufferSize = 256;
 
 bool running = 0;
@@ -86,7 +86,7 @@ void setup() {
 
     Serial.print("IP - ");
     Serial.println(WiFi.localIP());
-    Serial.print("MDNS - ");
+    Serial.print("MDNS (kame)- ");
     if (MDNS.begin("kame")) {
       Serial.println("OK");
     } else {
@@ -107,17 +107,6 @@ void loop() {
       noAvailableBytes = udp.parsePacket();
     }
 
-    /*
-    Serial.print("noAvailableBytes: ");
-    Serial.println(noAvailableBytes);
-    
-    for (uint16_t i = 0; i < noReadBytes; i++) {
-      Serial.print("0x");
-      Serial.print(packetBuffer[i], HEX);
-      Serial.print(", ");
-    }
-    Serial.println(' ');
-    */
     handleCommands(packetBuffer[noReadBytes-2], packetBuffer[noReadBytes-1]);
   } else {
     robot.home();
